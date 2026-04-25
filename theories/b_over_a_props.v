@@ -41,7 +41,7 @@ have uUrec : Urec ba_casoratian.
 have vUrec : Urec v.
   move=> k le2k.
   rewrite /c0 /c1 /annotated_recs_c.P_cf2 /annotated_recs_c.P_cf0 /v.
-  by rewrite int.shift2R; field; ring_lia.
+  by rewrite int.shift2R; field by ring_lia.
 (* this step below is only the fact that U is a rec of order 1 : should be *)
 (* obtained from something more general... *)
 suff {uUrec vUrec v} Urec1P (w1 w2 : int -> rat) : w1 2 = w2 2 ->
@@ -51,7 +51,7 @@ suff {uUrec vUrec v} Urec1P (w1 w2 : int -> rat) : w1 2 = w2 2 ->
   by field; ring_lia.
 have hUrec w k : Urec w -> 2%:~R <= k -> w (int.shift 1 k) = (c0 k / c1 k) * w k.
   move=> wUrec le2k; rewrite mulrAC; apply: canRL (mulfK _) _.
-    by rewrite /c1 /annotated_recs_c.P_cf2 expf_eq0; ring_lia.
+    by rewrite /c1 /annotated_recs_c.P_cf2 unlock expf_eq0; ring_lia.
   by apply/eqP; rewrite [_ * c1 k]mulrC -subr_eq0 wUrec.
 move=> ic Uw1 Uw2 [] //; elim => // [[]] // [] // k ihk _.
 by rewrite -[_.+3]addn1 PoszD -int.zshiftP !hUrec // ihk.
@@ -78,5 +78,5 @@ Proof.
 move=> le2j leji; rewrite -(telescope_nat (fun k => b_over_a_seq (Posz k))) //.
 rewrite [RHS]big_nat_cond [LHS]big_nat_cond; apply: eq_bigr => k Hk.
 rewrite -ba_casoratianE /b_over_a_seq /ba_casoratian; last ring_lia.
-by rewrite PoszD int.zshiftP; field; rewrite !a_neq0.
+by rewrite PoszD int.zshiftP; field by rewrite !a_neq0.
 Qed.

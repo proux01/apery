@@ -203,7 +203,7 @@ pose an1 := (a n.+1)%:Q; pose an2 := (a n.+2)%:Q.
 suff step : (an1 - 2%:Q) / (an1 - 1) + an1 ^-1 = (an2 - 2%:Q) / (an2 - 1).
   by rewrite big_nat_recr // ihn /= step.
 rewrite [an2]a_rat_rec1 /an1 addrK.
-by field; rewrite pmulrn !lt0r_neq0.
+field by rewrite pmulrn lt0r_neq0.
 Qed.
 
 
@@ -220,7 +220,7 @@ Proof.
 have -> : \sum_(0 <= i < n.+1) ((a i).-1)%:Q / a_rat i =
           \sum_(0 <= i < n.+1) (1 - (a_rat i) ^-1).
   apply: eq_bigr => i _; rewrite /a_rat.
-  by case: (a i) (a_pos i) => //= ai _; field; ring_lia.
+  by case: (a i) (a_pos i) => //= ai _; field by ring_lia.
 by rewrite sumrB big_mkord sumr_const /= card_ord sum_aV.
 Qed.
 

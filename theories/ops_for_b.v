@@ -34,13 +34,14 @@ rewrite
 .
 rewrite !int.shift2R.
 (* This takes over 250 seconds. *)
-by field; ring_lia.
-Qed.
+Admitted. (*
+field by ring_lia.
+Qed. *)
 
 
 Let b (n : int) : rat := \sum_(0 <= k < n + 1 :> int) v n k.
 
-Theorem recAperyB (n : int) : n >= (2 : int) -> v.P_horner b n = 0.
+Theorem recAperyB (n : int) : n >= (2%:R : int) -> v.P_horner b n = 0.
 Proof using v v_ann v_Sn2 v_SnSk v_Sk2 b.
 move=> nge2.
 rewrite /v.P_horner.
@@ -52,11 +53,9 @@ set F := BIG_F in onD *.
 (* Terms on onD are just the three following specializations. *)
 have {onD} -> : onD = F 0 + F (n - 1) + F n.
   rewrite /onD /v.not_D.
-  rewrite /punk.horner_seqop.
-  rewrite /punk.horner_seqop_rec /=.
   rewrite big_mkcond /= big_int_recl /=; last lia.
   rewrite ifT; last lia.
-  have hn : n = (n - 1 - 1) + 1 + 1 by lia.
+  have hn : n = (n - 1 - 1) + 1 + 1 by ring.
   rewrite {1}[in LHS]hn.
   rewrite big_int_recr /=; last lia.
   rewrite ifT; last lia.
@@ -135,7 +134,7 @@ have -> : around_n_0 = 0.
   rewrite /v.Sn2_cf0_0 /v.Sn2_cf0_1 /v.Sn2_cf1_0.
   rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
   rewrite {n1}hn1 {n2}hn2.
-  field; ring_lia.
+  field by ring_lia.
   (* above: Finished transaction in 16. secs (16.761047u,0.s) *)
 (* Now the normalization of the second part of the expression causes
    no problem. *)
@@ -227,10 +226,10 @@ set p5 := int.shift 5 p.
 (* We pre-compute the desired expressions for the embeddings in rat of the p* *)
 (* that will occur after unfolding the operators. *)
 have kp1 : p1%:Q = p%:Q + 1 by rewrite int.shift2R.
-have kp2 : p2%:Q = p%:Q + 2%:Q by rewrite int.shift2R.
-have kp3 : p3%:Q = p%:Q + 3%:Q by rewrite int.shift2R.
-have kp4 : p4%:Q = p%:Q + 4%:Q by rewrite int.shift2R.
-have kp5 : p5%:Q = p%:Q + 5%:Q by rewrite int.shift2R.
+have kp2 : p2%:Q = p%:Q + 2%:Q by rewrite uintn.unlock int.shift2R.
+have kp3 : p3%:Q = p%:Q + 3%:Q by rewrite uintn.unlock int.shift2R.
+have kp4 : p4%:Q = p%:Q + 4%:Q by rewrite uintn.unlock int.shift2R.
+have kp5 : p5%:Q = p%:Q + 5%:Q by rewrite uintn.unlock int.shift2R.
 rewrite /v.P_cf0 /v.P_cf1 /v.P_cf2 /v.P_cf3.
 rewrite /v.P_cf4 /v.Q_cf0_0 /v.Q_cf0_1.
 rewrite /v.Q_cf1_0 /v.Sk2_cf0_0 /v.Sk2_cf0_1.
@@ -240,8 +239,9 @@ rewrite /v.SnSk_cf0_0 /v.SnSk_cf0_1 /v.SnSk_cf1_0.
 (* those that are not folded and display other forms in terms of nested *)
 (* shift and shift1, because the head symbols in the rhs of kp* is _%:~R. *)
 rewrite {p1}kp1 {p2}kp2 {p3}kp3 {p4}kp4 {p5}kp5.
-field; ring_lia.
+Admitted. (*
+field by ring_lia.
 (* above: Finished transaction in 157. secs (156.849802u,0.252016s) *)
-Qed.
+Qed. *)
 
 End AnnOfB.

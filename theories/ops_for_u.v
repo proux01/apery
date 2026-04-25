@@ -41,7 +41,7 @@ set s1 := s _ _.
 set s2 := s _ _.
 set z1 := z _.
 rewrite /s.Sk2_cf0_0 /s.Sk2_cf0_1.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma u_SnSk : s.SnSk u.
@@ -58,7 +58,7 @@ set s3 := s _ _.
 set z1 := z _.
 set z2 := z _.
 rewrite /s.SnSk_cf0_0 /s.SnSk_cf1_0 /s.SnSk_cf0_1.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma u_Sn2 : s.Sn2 u.
@@ -75,7 +75,7 @@ set z1 := z _.
 set z2 := z _.
 rewrite /z.Sn2_cf0 /z.Sn2_cf1
   /s.Sn2_cf0_0 /s.Sn2_cf1_0 /s.Sn2_cf0_1.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 End AnnOfU.

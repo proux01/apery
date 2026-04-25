@@ -34,7 +34,7 @@ rewrite
   /d.Q1_cf0_0_0 /d.Q1_cf0_1_0 /d.Q1_cf1_0_0
   /d.Sk_cf0_0_0 /d.Sm_cf0_0_0 /d.Sn_cf0_0_0.
 rewrite !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Theorem P2_eq_Delta_Q2 : d.CT2 d.
@@ -50,9 +50,9 @@ Fail set dtest := d _ _ _.
 rewrite
   /d.P2_cf0_0 /d.P2_cf1_0 /d.P2_cf2_0 /d.P2_cf3_0
   /d.Q2_cf0_0_0 /d.Q2_cf1_0_0 /d.Q2_cf2_0_0
-  /d.Sk_cf0_0_0 /d.Sm_cf0_0_0 /d.Sn_cf0_0_0.
+  /d.Sm_cf0_0_0 /d.Sn_cf0_0_0.
 rewrite !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Theorem P3_eq_Delta_Q3 : d.CT3 d.
@@ -68,7 +68,7 @@ Fail set dtest := d _ _ _.
 rewrite
   /d.P3_cf0_0 /d.P3_cf0_1 /d.P3_cf1_0 /d.P3_cf1_1 /d.Q3_cf0_0_0
   /d.Sk_cf0_0_0 /d.Sm_cf0_0_0 /d.Sn_cf0_0_0.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Theorem P4_eq_Delta_Q4 : d.CT4 d.
@@ -82,8 +82,8 @@ set d_nmk := d _ _ _.
 Fail set dtest := d _ _ _.
 rewrite
   /d.P4_cf0_0 /d.P4_cf0_1 /d.P4_cf0_2 /d.Q4_cf0_0_0
-  /d.Sk_cf0_0_0 /d.Sm_cf0_0_0 /d.Sn_cf0_0_0.
-by field; ring_lia.
+  /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
+field by ring_lia.
 Qed.
 
 
@@ -143,8 +143,8 @@ set d2 := d _ _ _.
 rewrite
   /d.P1_cf0_1 /d.P1_cf1_1
   /d.Q1_cf0_0_0 /d.Q1_cf0_1_0 /d.Q1_cf1_0_0
-  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
-by field; ring_lia.
+  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0.
+field by ring_lia.
 Qed.
 
 
@@ -183,8 +183,8 @@ set d1 := d _ _ _.
 set d2 := d _ _ _.
 rewrite
   /d.Q2_cf0_0_0 /d.Q2_cf1_0_0 /d.Q2_cf2_0_0
-  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
-by field; ring_lia.
+  /d.Sn_cf0_0_0 /d.Sm_cf0_0_0.
+field by ring_lia.
 Qed.
 
 
@@ -224,9 +224,9 @@ set d1 := d _ _ _.
 set d2 := d _ _ _.
 rewrite
   /d.P3_cf0_1 /d.P3_cf1_1 /d.Q3_cf0_0_0
-  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
+  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0.
 rewrite !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 
@@ -268,9 +268,9 @@ set d1 := d _ _ _.
 set d2 := d _ _ _.
 rewrite
   /d.P4_cf0_1 /d.P4_cf0_2 /d.Q4_cf0_0_0
-  /d.Sn_cf0_0_0 /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
+  /d.Sk_cf0_0_0 /d.Sm_cf0_0_0.
 rewrite !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 
@@ -351,7 +351,7 @@ rewrite
   /d.P3_cf0_0 /d.P3_cf0_1 /d.P3_cf1_0
   /d.P3_cf1_1 /d.P4_cf0_0 /d.P4_cf0_1
   /d.P4_cf0_2.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma s_SnSk : SnSk s.
@@ -379,7 +379,7 @@ rewrite
   /d.P3_cf0_0 /d.P3_cf0_1 /d.P3_cf1_0
   /d.P3_cf1_1 /d.P4_cf0_0 /d.P4_cf0_1
   /d.P4_cf0_2.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma s_Sk2 : Sk2 s.
@@ -391,7 +391,9 @@ have Sk2_lcomb_eq_0 : Sk2_lcomb s n k = 0.
 apply/eqP.
 rewrite -subr_eq0.
 set nzero := d.P4_cf0_2 n k.
-have nzero_n0 : nzero != 0 by rewrite /nzero /d.P4_cf0_2 !mulf_eq0; ring_lia.
+have nzero_n0 : nzero != 0.
+  rewrite /nzero /d.P4_cf0_2 !mulf_eq0 unlock /Nat.of_uint/=/Nat.tail_mul/=.
+  ring_lia.
 rewrite -(mulrI_eq0 _ (lregP nzero_n0)) // {nzero_n0}.
 rewrite -Sk2_lcomb_eq_0.
 apply/eqP.
@@ -407,7 +409,7 @@ rewrite
   /d.P3_cf0_0 /d.P3_cf0_1 /d.P3_cf1_0
   /d.P3_cf1_1 /d.P4_cf0_0 /d.P4_cf0_1
   /d.P4_cf0_2.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 End AnnOfS.

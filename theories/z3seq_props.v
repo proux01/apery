@@ -54,8 +54,8 @@ have hrk : r = k%:Q + 1 by rewrite hkr addrK.
 have lt1r : 1 < r by rewrite hrk ltrDr.
 rewrite hkr; set  rhs := (X in _ <= X).
 have {rhs} -> : rhs = 2%:Q^-1 * (2%:Q * r - 1) / (r - 1) ^ 2 * (r ^ 2)^-1.
-  by rewrite /rhs; field; ring_lia.
-have -> : (r ^ 3)^-1 = r ^-1 * (r ^ 2)^-1 by field; ring_lia.
+  by rewrite /rhs; field by ring_lia.
+have -> : (r ^ 3)^-1 = r ^-1 * (r ^ 2)^-1 by field by ring_lia.
 have le0r : 0 <= r by apply: ltW; apply: lt_trans lt1r.
 apply: ler_pM; rewrite ?invr_ge0 ?exprn_ge0 //.
 rewrite ler_pdivlMr; last first.

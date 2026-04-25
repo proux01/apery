@@ -53,10 +53,10 @@ Proof. solve_b_evaluation. Qed.
 Lemma b1_eq : b 1 = 6%:Q.
 Proof. solve_b_evaluation. Qed.
 
-Lemma b2_eq : b 2 = rat_of_Z 351 / rat_of_Z 4.
+Lemma b2_eq : b 2 = 351 / 4.
 Proof. solve_b_evaluation. Qed.
 
-Lemma b3_eq : b 3 = rat_of_Z 62531 / rat_of_Z 36.
+Lemma b3_eq : b 3 = 62531%:R / 36.
 Proof. solve_b_evaluation. Qed.
 
 
@@ -66,11 +66,11 @@ Proof. solve_b_evaluation. Qed.
 Lemma a0_eq : a 0 = 1.
 Proof. solve_a_evaluation. Qed.
 
-Lemma a1_eq : a 1 = rat_of_Z 5.
+Lemma a1_eq : a 1 = 5.
 Proof. solve_a_evaluation. Qed.
 
-Lemma a2_eq : a 2 = rat_of_Z 73.
+Lemma a2_eq : a 2 = 73.
 Proof. solve_a_evaluation. Qed.
 
-Lemma a3_eq : a 3 = rat_of_Z 1445.
+Lemma a3_eq : a 3 = 1445.
 Proof. solve_a_evaluation. Qed.

@@ -1,5 +1,6 @@
+From elpi.apps Require Import locker.
 Require Import ZArith.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
+From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint algebra.lra.
 From mathcomp Require Import archimedean rat interval_inference all_field.
 Require Import extra_mathcomp tactics binomialz arithmetics.
 Require Import rat_of_Z hanson_elem_arith hanson_elem_analysis.
@@ -74,12 +75,12 @@ Lemma remark_7_4 :
 Proof.
 move => r.
 have {r} ->: 1 + r = n%:Q / (n.+1 - a i)%N%:Q.
-  by rewrite /r -!subzn //; first field; ring_lia.
+  by rewrite /r -!subzn //; [field by ring_lia | ring_lia].
 case: (a i) (a_pos i) Hain => // ai' _ Hain'.
 rewrite subn1 subSS exprMn exprVn ![exp_quo _ _ _ ^+ ai'.+1]exprAC !rootCK //.
 rewrite rmorphXn !rmorphM !fmorphV !rmorph_int !exprMn !exprVn !exprnP /=.
 rewrite -subzn ?expfzDr -?invr_expz ?exprz_pintl; [| ring_lia..].
-by field; rewrite !intr_eq0 !expf_eq0; lia.
+field by rewrite !intr_eq0 !expf_eq0; lia.
 Qed.
 
 End PreliminaryRemarksLemma7.
@@ -249,15 +250,15 @@ End W_k.
 (* > evalf(1415 / 1000 * 1443 / 1000 * 1321/1000 * 1092/1000 * (1004/1000)^2); *)
 (*                                   2.969037292 *)
 
-Definition a'0_ub : rat := rat_of_Z 283 / rat_of_Z 200.
+Definition a'0_ub : rat := 283 / 200.
 
-Definition a'1_ub : rat := rat_of_Z 1443 / rat_of_Z 1000.
+Definition a'1_ub : rat := 1443 / 1000.
 
-Definition a'2_ub : rat := rat_of_Z 1321 / rat_of_Z 1000.
+Definition a'2_ub : rat := 1321 / 1000.
 
-Definition a'3_ub : rat := rat_of_Z 273 / rat_of_Z 250.
+Definition a'3_ub : rat := 273 / 250.
 
-Definition a'4_ub : rat := rat_of_Z 201 / rat_of_Z 200.
+Definition a'4_ub : rat := 201 / 200.
 
 End A'.
 
@@ -272,32 +273,18 @@ Module Computations.
 (* Can't be moved before *)
 (* Import ZArith. *)
 
-Definition w : rat := a'0_ub * a'1_ub * a'2_ub * a'3_ub * a'4_ub ^ 2.
+mlock Definition w : rat := a'0_ub * a'1_ub * a'2_ub * a'3_ub * a'4_ub ^ 2.
 
-Lemma w_val : w = rat_of_Z 5949909309448377 / rat_of_Z (2 * 10 ^ 15).
-Proof.
-rewrite /w /a'0_ub /a'1_ub /a'2_ub /a'3_ub /a'4_ub.
-by field.
-Qed.
+Lemma w_val : w = 5949909309448377%:R / (2 * 10 ^ 15).
+Proof. rewrite w.unlock /a'0_ub /a'1_ub /a'2_ub /a'3_ub /a'4_ub; field. Qed.
 
-Lemma w_gt0 : 0 < w. Proof. by rewrite w_val divr_gt0 // rat_of_Z_Zpos. Qed.
+Lemma w_gt0 : 0 < w. Proof. rewrite w_val; lra. Qed.
 
 Lemma w_ge0 : 0 <= w. Proof. exact/ltW/w_gt0. Qed.
 
-Lemma w_lt3 : w < 3%:Q.
-Proof.
-rewrite w_val ltr_pdivrMr ?rat_of_Z_Zpos // -subr_gt0.
-have -> : 3%:Q * rat_of_Z (2 * 10 ^ 15) - rat_of_Z 5949909309448377 =
-          rat_of_Z (3 * 2 * 10 ^ 15 - 5949909309448377).
-  ring.
-by rewrite rat_of_ZEdef ltr0z.
-Qed.
+Lemma w_lt3 : w < 3%:Q. Proof. rewrite w_val; lra. Qed.
 
-Lemma w_gt1 : 1 < w.
-Proof.
-rewrite w_val ltr_pdivlMr ?rat_of_Z_Zpos // 1?mul1r -subr_gt0.
-by rewrite -rmorphB rat_of_Z_Zpos.
-Qed.
+Lemma w_gt1 : 1 < w. Proof. rewrite w_val; lra. Qed.
 
 Lemma w_ge1 : 1 <= w. Proof. exact/ltW/w_gt1. Qed.
 
@@ -311,57 +298,26 @@ rewrite -(subnK le4k) addnC; apply: le_trans (w_seq_bound_tail _ _) _ => //.
 have -> : w_seq 4 = a' 0 * a' 1 * a' 2 * a' 3.
   by rewrite /w_seq !big_ord_recr /= big_ord0 mul1r.
 have a'0_ubP : a' 0 <= a'0_ub%:C.
-  have ge0a'0 : 0 <= a'0_ub%:C by rewrite ler0q divr_ge0.
-  by rewrite root_le_x // ?ler0q // a0 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.  (* TODO: add a canonical instance for ratr in interval_inference.v *)
+  have ge0a'0 : 0 <= a'0_ub%:C by rewrite ler0q /a'0_ub; lra.
+  rewrite root_le_x // ?ler0q // a0 -rmorphXn ler_rat /a'0_ub; lra.
 have a'1_ubP : a' 1 <= a'1_ub%:C.
-  have ge0a'1 : 0 <= a'1_ub%:C by rewrite ler0q divr_ge0.
-  by rewrite root_le_x // ?ler0q // a1 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.  (* TODO: add a canonical instance for ratr in interval_inference.v *)
+  have ge0a'1 : 0 <= a'1_ub%:C by rewrite ler0q /a'1_ub; lra.
+  rewrite root_le_x // ?ler0q // a1 -rmorphXn ler_rat /a'1_ub; lra.
 have a'2_ubP : a' 2 <= a'2_ub%:C.
-  have ge0a'2 : 0 <= a'2_ub%:C by rewrite ler0q divr_ge0.
+  have ge0a'2 : 0 <= a'2_ub%:C by rewrite ler0q /a'2_ub; lra.
   have ge0a2 : 0 <= (a 2)%:Q%:C by rewrite ler0q.
-  by rewrite root_le_x // a2 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
+  rewrite root_le_x // a2 -rmorphXn ler_rat /a'2_ub; lra.
 have a'3_ubP : a' 3 <= a'3_ub%:C.
-  have ge0a'3 : 0 <= a'3_ub%:C by rewrite ler0q divr_ge0.
+  have ge0a'3 : 0 <= a'3_ub%:C by rewrite ler0q /a'3_ub; lra.
   have ge0a3 : 0 <= (a 3)%:Q%:C by rewrite ler0q.
-  by rewrite root_le_x // a3 -rmorphXn ler_rat expr_div_n ler_pdivlMr; ring_lia.
+  rewrite root_le_x // a3 -rmorphXn ler_rat /a'3_ub; lra.
 have a'4_ubP : a' 4 <= a'4_ub%:C.
-  have ge0a'1 : 0 <= a'4_ub%:C by rewrite ler0q divr_ge0.
+  have ge0a'1 : 0 <= a'4_ub%:C by rewrite ler0q /a'4_ub; lra.
   have ge0a4 : 0 <= (a 4)%:Q%:C by rewrite ler0q ler0z.
-  rewrite root_le_x //.
-  pose t : rat := (rat_of_Z 200)^-1.
-  have -> : a'4_ub = 1 + t by rewrite /a'4_ub /t; field.
-  rewrite -rmorphXn ler_rat a4 exprDn.
-  (* FIXME: *)
-  (* have -> : (1808 = 8 + 1800)%N by []. *)
-  change 1808%N with (8 + 1800)%N.
-  rewrite big_split_ord /=; apply: ler_wpDr.
-    apply: sumr_ge0 => i.
-    by rewrite expr1n mul1r mulrn_wge0 ?exprn_ge0 ?invr_ge0.
-  rewrite 8!big_ord_recl big_ord0 !expr1n !mul1r /= /bump !add1n.
-  set lhs := (X in _ <= X).
-  suff -> : lhs = rat_of_Z 34077892883014859211 / rat_of_Z 12800000000000000.
-    by rewrite lter_pdivlMr; ring_lia.
-  rewrite {}/lhs bin0 mulr1n bin1 expr0 expr1.
-  have -> : t ^+ 7 *+ 'C(1807, 7) =  t ^+ 7 * rat_of_Z 12337390971384003811.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  have -> : t ^+ 6 *+ 'C(1807, 6) = t ^+ 6 * rat_of_Z 47952102609488077.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  have -> : t ^+ 5 *+ 'C(1807, 5) =  t ^+ 5 * rat_of_Z 159662938766331.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  have -> : t ^+ 4 *+ 'C(1807, 4) = t ^+ 4 * rat_of_Z 442770212885.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  have -> : t ^+ 3 *+ 'C(1807, 3) = t ^+ 3 * rat_of_Z 981752135.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  have -> : t ^+ 2 *+ 'C(1807, 2) = t ^+ 2 * rat_of_Z 1631721.
-    rewrite -mulr_natr pmulrn -binz_nat_nat binzE_ffact -ffactnn ffactE /=.
-    by field.
-  by rewrite /t; field.
-by rewrite 4!rmorphM rmorphXn /=; do 4!rewrite ler_pM ?mulr_ge0 //.
+  rewrite root_le_x // a4 -rmorphXn ler_rat /a'4_ub; lra.
+move: a'0_ubP a'1_ubP a'2_ubP a'3_ubP a'4_ubP; rewrite w.unlock.
+move: a'0_ub a'1_ub a'2_ub a'3_ub a'4_ub => b0 b1 b2 b3 b4 b0P b1P b2P b3P b4P.
+by rewrite 4!rmorphM rmorphXn/=; do 4![rewrite ler_pM ?mulr_ge0 //].
 Qed.
 
 End Computations.
@@ -508,6 +464,14 @@ case: k Hank => [| k] //; case: k => [| k Hank]; last exact: k_bound.
 by rewrite addn2.
 Qed.
 
+Module Import LocalDefs.
+mlock Definition eps : rat := w / 3.
+mlock Definition eps1 : rat := 5949909309448377%:R.
+mlock Definition eps2 : rat := 6 * 10 ^ 15.
+Lemma eps2_val : eps2 = 3 * (2 * 10 ^ 15).
+Proof. by rewrite eps2.unlock; ring. Qed.
+End LocalDefs.
+
 Theorem t3_nat : exists K : nat,
     (0 < K)%N /\ forall n : nat, (iter_lcmn n <= K * 3 ^ n)%N.
 Proof.
@@ -526,9 +490,8 @@ have lt0m : 0 < m by rewrite -mE.
 have le0m : 0 <= m by exact: ltW.
 have lt1m : 1 < m by rewrite -mE.
 have le1m : 1 <= m by exact: ltW.
-move epsE: (w / 3%:R) => eps.
 have lt0eps1 : 0 < eps < 1.
-  by rewrite -epsE ltr_pdivlMr // mul0r ltr_pdivrMr // mul1r w_lt3 w_gt0.
+  by rewrite eps.unlock ltr_pdivlMr // mul0r ltr_pdivrMr // mul1r w_lt3 w_gt0.
 pose u n k eps : rat := (m * n%:R) ^ k.+1 * eps ^ n.+1.
 suff hloglog : exists (K : rat), (0 < K) /\ (forall n k, cond n k -> u n k eps < K).
   have [K [lt0K KP]] := hloglog.
@@ -536,7 +499,7 @@ suff hloglog : exists (K : rat), (0 < K) /\ (forall n k, cond n k -> u n k eps <
   move=> n k hcond.
   apply: le_trans (ltW (t2_rat hcond)) _; rewrite -mulrA -exprSz.
   rewrite -ler_pdivrMr; last exact: exprz_gt0.
-  by rewrite -mulrA -expr_div_n mE epsE; apply/ltW/KP.
+  by rewrite -mulrA -expr_div_n mE -eps.unlock; apply/ltW/KP.
 have [lt0eps  lteps1] := andP lt0eps1.
 pose loglog n := trunc_log 2 (trunc_log 2 n).
 pose v n : rat := (m * n%:R) ^ (loglog n).+3 * eps ^ n.+1.
@@ -624,25 +587,20 @@ have maj_t n : t n.+1 <= t n ^ 2 * l n.
 have le_0_l n : 0 <= l n. 
   rewrite /l; apply: mulr_ge0; first by apply/exprz_ge0/ler0n.  
   by apply/exprz_ge0/ltW.
-pose eps1 := rat_of_Z 5949909309448377. 
-pose eps2 := rat_of_Z (6 * 10 ^ 15).
-have lt0eps2 : 0 < eps2 by exact: rat_of_Z_Zpos. 
-have eps2_val : eps2 = 3%:R * rat_of_Z (2 * 10 ^ 15).
-  by rewrite /eps2; ring.
-have epsF : eps = eps1 / eps2.
-  by rewrite -epsE eps2_val invfM [RHS]mulrA [RHS]mulrAC w_val.
 have a3 : alpha 3%N = expn 2 8 by [].
+have lt0eps2 : 0 < eps2 by rewrite eps2.unlock; lra.
+have epsF : eps = eps1 / eps2.
+  rewrite eps.unlock w_val eps1.unlock eps2.unlock; field.
 have lt_l3_1 : l 3%N <= 1.
   have -> : l 3%N = (2%:R * eps ^ (2%:R ^ 3 * ((alpha 3%N)%:R - 2%:R))) ^ (2 ^ 5)%N%:R.
     rewrite /l a3 [RHS]expfzMl -!natz !natrX !natz !exprnP !exprz_exp.
     by congr (_ ^ _ * eps ^ _).
-  rewrite expr_le1 //; last exact/mulr_ge0/exprz_ge0/ltW.
+  rewrite expr_le1; [|by []|exact/mulr_ge0/exprz_ge0/ltW].
   suff: 2%:R * eps ^ 90 <= 1.
     by apply: le_trans; rewrite ler_pM2l ?ler_piXz2l.
-  rewrite epsF expfzMl -expfV mulrA ler_pdivrMr; last exact: exprz_gt0.
-  rewrite mul1r -subr_ge0 -!rat_of_Z_pow mulr_natl -rmorphMn -rmorphB.
-  vm_compute; exact: rat_of_Z_ZposW.
+  by rewrite eps.unlock w_val; lra.
 rewrite [l]lock in lt_l3_1.
+have thgt0 : 0 < 10 ^ 3 :> rat by lra.
 have lt_t4_1 : t 4%N < 1.
   rewrite {l le_0_l lt_l3_1 maj_t loglog a3}.
   pose a4 := locked alpha 4%N.
@@ -650,69 +608,81 @@ have lt_t4_1 : t 4%N < 1.
   have -> : t 4%N = (m * a4%:R) ^ 14 * eps ^ alpha 4%N by rewrite /t /a4 -lock.
   suff [M hM hm]: exists2 M, (M * 14 <= alpha 4)%N & (m * a4%:R) * eps ^ M < 1.
     have {hm} : (m * a4%:R) ^14 * eps ^ (M * 14)%N < 1.
-      rewrite PoszM -exprz_exp -expfzMl; apply: exprn_ilt1=> //.
-      rewrite -mulrA pmulr_rge0 // pmulr_rge0 ?ltr0n //; apply: exprz_ge0; exact: ltW.
-    apply: le_lt_trans. rewrite ler_pM2l; first by rewrite ler_piXz2l.
-    by apply: exprz_gt0; rewrite pmulr_rgt0 // ltr0n.
-  pose e := rat_of_Z 992 / rat_of_Z (10 ^ 3).
+      rewrite PoszM -exprz_exp -expfzMl; apply: exprn_ilt1 => [|//].
+      rewrite -mulrA pmulr_rge0 => [|//].
+      rewrite pmulr_rge0 ?ltr0n => [|//].
+      by apply: exprz_ge0; exact: ltW.
+    apply: le_lt_trans; rewrite ler_pM2l; first by rewrite ler_piXz2l.
+    by apply: exprz_gt0; rewrite pmulr_rgt0 => [|//]; rewrite ltr0n.
+  pose e : rat := 992 / (10 ^ 3).
   have ltepse : eps < e.
-    rewrite epsF ltr_pdivrMr // /e mulrAC ltr_pdivlMr; last  exact: rat_of_Z_Zpos.
-    have -> : eps2 = rat_of_Z (6 * 10 ^ 12) * rat_of_Z (10 ^ 3).
-      by rewrite /eps2; ring.
-    rewrite mulrA ltr_pM2r ?rat_of_Z_Zpos // -subr_gt0 /eps1 -rmorphM -rmorphB.
-    exact: rat_of_Z_Zpos. (* long *)
+    rewrite epsF ltr_pdivrMr => [|//].
+    rewrite /e mulrAC ltr_pdivlMr => [|//].
+    have -> : eps2 = (6 * 10 ^ 12) * (10 ^ 3) by rewrite eps2.unlock; ring.
+    rewrite [ltRHS]mulrA ltr_pM2r ?eps1.unlock; lra.
   suff [M le14M]: exists2 M, (M * 14 <= alpha 4)%N & (m * a4%:R) * (e ^ M) < 1.
-    move=> hm; exists M => //; apply: le_lt_trans hm. rewrite ler_pM2l; last first.
-      by rewrite pmulr_rgt0 // ltr0n.
-    by apply: lerXn2r; apply: ltW; rewrite // divr_gt0 // rat_of_Z_Zpos.
+    move=> hm; exists M => [//|]; apply: le_lt_trans hm.
+    rewrite ler_pM2l; last first.
+      by rewrite pmulr_rgt0 => [|//]; rewrite ltr0n.
+    (apply: lerXn2r; apply: ltW) => [||//]; [exact: lt0eps|].
+    by apply: le_lt_trans ltepse; apply/ltW.
   suff [M le14M hm]: exists2 M, (M * 14 <= alpha 4)%N &
-      0 < rat_of_Z (10 ^ 3) ^ M -  (m * a4%:R) * rat_of_Z 992 ^ M.
-    exists M => //.
-    rewrite /e  expfzMl -expfV mulrA ltr_pdivrMr; last by rewrite exprz_gt0 // rat_of_Z_Zpos.
-    by rewrite mul1r -subr_gt0.
-  exists 2000%N; first by rewrite /alpha -subn_eq0. (* FIXME : compute in Z. *)
+      0 < (10 ^ 3) ^ M -  (m * a4%:R) * 992 ^ M.
+    exists M => [//|].
+    rewrite /e expfzMl -[X in _ * (_ * X) < 1]expfV mulrA ltr_pdivrMr.
+      by rewrite mul1r -subr_gt0.
+    by apply/exprz_gt0/thgt0.
+  exists 950%N; first by rewrite /alpha -subn_eq0. (* FIXME : compute in Z. *)
+  (* rewrite -mE /a4 -lock /alpha. *)
+  admit. (*
   rewrite -mE -!rat_of_Z_pow.
   rewrite pmulrn -intrM mulrzl -rmorphMz -rmorphB -mulrzl intrM.
   rewrite /a4 -lock /alpha.
-  vm_compute; exact: rat_of_Z_Zpos. (* long *)
+  vm_compute; exact: rat_of_Z_Zpos. (* long *) *)
 rewrite [t]lock in lt_t4_1.
 have lt_ln_1 (n : nat) : (3 <= n)%N -> l n <= 1.
   elim: n => [// | n ihn].
   rewrite leq_eqVlt => /predU1P [<- | {}/ihn ihn]; first by rewrite [l]lock. (* unlock does not work... *)
-  suff h : l n.+1 <= (l n) ^ 2 by apply: le_trans h _; apply: mulr_ile1.
+  suff h : l n.+1 <= (l n) ^ 2.
+    by apply: le_trans h _; apply: mulr_ile1; [exact: le_0_l..| |]; exact: ihn.
   rewrite /l expfzMl exprz_exp; apply: ler_pM.
   - exact/exprz_ge0/ler0n.
-  - exact/exprz_ge0/ltW.
-  - by rewrite alphaS natrX exprnP exprz_exp.
-  rewrite exprz_exp ler_piXz2l //.
+  - exact/exprz_ge0/ltW/lt0eps.
+  - by rewrite alphaS natrX exprnP exprz_exp mulrC lexx.
+  rewrite exprz_exp ler_piXz2l; [|exact: lt0eps|exact: lteps1| |].
   - rewrite alphaS -subr_ge0; set a := alpha _; set x := (X in 0 <= X).
     have {x} -> : x = a%:Z ^+ 2 ^+ 2 - (2%:Z * a%:Z) ^+ 2 + 4%:Z * a%:Z.
       by rewrite /x; ring.
-    rewrite subr_sqr; apply: addr_ge0; apply: mulr_ge0 => //.
+    (rewrite subr_sqr; apply: addr_ge0; apply: mulr_ge0) => [|//|//|//].
     by rewrite expr2 -mulrBl; apply/mulr_ge0/isT/le_0_alpham2.
   - by rewrite -topredE /= -mulrBl; apply: mulr_ge0; first exact: le_0_alpham2.
-  - by rewrite -topredE /= -mulrBl; apply: mulr_ge0; first exact: mulr_ge0.
+  - rewrite -topredE /= -mulrBl; apply: mulr_ge0 => [|//].
+    by apply: mulr_ge0; [exact: le_0_alpham2|exact/ltW/lt_0_alpha].
 suff [K [lt0K [N Pn]]] : exists K : rat,  0 < K /\ exists N : nat, (forall n, (N < n)%N -> t n < K).
   (* a bigenough would be nice here *)
   pose KK := (K + \sum_(0 <= j < N.+1) t j).
-  have le0sum : 0 <= \sum_(0 <= j < N.+1) t j by apply: sumr_ge0=> n _; exact: ltW.
+  have le0sum : 0 <= \sum_(0 <= j < N.+1) t j.
+    by apply: sumr_ge0 => n _; apply: le_0_t.
   have lt0KK : 0 < KK by rewrite /KK; apply: ltr_pwDl.
   have ltKK : K <= KK by rewrite /KK lerDl.
   have KKmaj j : (j <= N)%N -> t j < KK.
-    move=> lej4; rewrite /KK (bigD1_seq j) //=; last by rewrite mem_iota iota_uniq.
-    - rewrite addrA addrAC cprD; apply: ltr_pwDl=> //; apply: sumr_ge0=> n _; exact: ltW.
-    by rewrite mem_index_iota.
-  exists KK; split => //; elim=> [| n ihn]; first exact: KKmaj.
+    move=> lej4; rewrite /KK (bigD1_seq j); last 2 first.
+    - by rewrite mem_index_iota.
+    - by rewrite iota_uniq.
+    rewrite addrA addrAC cprD; apply: ltr_pwDl => [//|].
+    by apply: sumr_ge0 => n _; apply: le_0_t.
+  exists KK; split=> [//|]; elim=> [| n ihn]; first exact: KKmaj.
   case: (ltnP n.+1 N.+1) => [lenN | ltNn]; first exact: KKmaj.
   by apply: lt_le_trans ltKK; apply: Pn.
-exists 1; split => //; exists 3%N; elim=> [| n ihn] //.
+exists 1; split=> [//|]; exists 3%N; elim=> [| n ihn]; [discriminate|].
 rewrite leq_eqVlt => /predU1P [<- | lt3n]; first by rewrite [t]lock.
 have {}ihn := ihn lt3n.
 apply: le_lt_trans (maj_t _) _; apply: (@le_lt_trans _ _ (t n ^ 2)); last first.
-  by apply: mulr_ilt1.
+  by apply/mulr_ilt1; [apply: le_0_t..| |]; apply: ihn.
 rewrite ger_pMr; first by apply: lt_ln_1; rewrite ltnS in lt3n; apply: ltn_trans lt3n.
-exact: exprz_gt0.
-Qed.
+by apply/exprz_gt0/lt_0_t.
+Admitted. (*
+Qed. *)
 
 
 

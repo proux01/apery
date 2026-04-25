@@ -1,6 +1,7 @@
+From elpi.apps Require Import locker.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat choice seq.
 From mathcomp Require Import fintype finfun bigop order ssralg ssrnum ssrint.
-From mathcomp Require Export zify ring.
+From mathcomp Require Export zify algebra.ring.
 
 Set SsrOldRewriteGoalsOrder.  (* change Set to Unset when porting the file, then remove the line when requiring MathComp >= 2.6 *)
 Set Implicit Arguments.
@@ -128,3 +129,11 @@ Ltac zify_ring := zify_ring_hyp; zify_ring_goal.
 
 Ltac ring_lia := zify_ring; lia.
 Ltac ring_nia := zify_ring; nia.
+
+mlock Definition uintn := Nat.of_uint.
+
+Tactic Notation "ring" := rewrite 1?uintn.unlock; ring.
+
+Tactic Notation "field" := rewrite 1?uintn.unlock; field.
+
+Tactic Notation "field" "by" tactic(T) := rewrite 1?uintn.unlock; field by T.

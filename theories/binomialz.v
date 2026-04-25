@@ -182,7 +182,7 @@ case: k => [k|[|k]] // _; last by rewrite !binz_neg // !mulr0.
 rewrite mulrAC; apply: (canRL (mulfK _)); first by ring_lia.
 rewrite [LHS]mulrC [in LHS]binNzz [in RHS]binNzz !rmorphM /=.
 rewrite opprD addrACA subrr addr0 mulrCA binzS_weak //; [|lia..].
-by rewrite -PoszD addn1 exprSz; field; ring_lia.
+by rewrite -PoszD addn1 exprSz; field by ring_lia.
 Qed.
 
 Lemma binzS (F : numFieldType) (n k : int) : k + 1 != 0 ->
@@ -205,7 +205,7 @@ move=> hkn; case: (altP (k =P 0)) hkn => [-> | hk0] hkn.
 have hk : k = k - 1 + 1 by rewrite -addrA subrr addr0.
 rewrite hk binzSS; last by rewrite -hk.
 rewrite binzS; last by rewrite -hk.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma binz_gt0 (n k : int) : 0 <= k -> k <= n -> 0 < binomialz n k.

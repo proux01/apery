@@ -26,7 +26,7 @@ Lemma c_Sn : annotated_recs_c.Sn c.
 Proof.
 rewrite /annotated_recs_c.Sn /annotated_recs_c.precond.Sn /c => n k ?.
 rewrite addrAC !binSz /annotated_recs_c.Sn_cf0_0; [| lia..].
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 
@@ -35,7 +35,7 @@ Proof.
 rewrite /annotated_recs_c.Sk /annotated_recs_c.precond.Sk /c => n k ?.
 rewrite int.zshiftP addrA !(binSz, binzS); [ | lia ..].
 rewrite /annotated_recs_c.Sk_cf0_0.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Definition c_ann := annotated_recs_c.ann c_Sn c_Sk.
@@ -51,14 +51,14 @@ have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 (* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
 set b := binomialz (n + m) _.
 have b2_pos: 0 < b by apply: bin_nonneg; lia.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 (* This is a fake recurrence, because d does not really depend on k *)
 Lemma d_Sk : annotated_recs_d.Sk d.
 Proof.
 rewrite /annotated_recs_d.Sk /annotated_recs_d.precond.Sk => n k m ?.
-by rewrite /annotated_recs_d.Sk_cf0_0_0 rat_of_ZEdef mul1r.
+by rewrite mul1r.
 Qed.
 
 Lemma d_Sm : annotated_recs_d.Sm d.
@@ -70,7 +70,7 @@ have b1_pos: 0 < binomialz n m by apply: bin_nonneg; lia.
 (* FIXME: get rid of this `set b` (lia should compare variables by (keyed) unification instead of term equality). *)
 set b := binomialz (n + m) _.
 have b2_pos: 0 < b by apply: bin_nonneg; lia.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Definition d_ann := annotated_recs_d.ann d_Sn d_Sk d_Sm.
@@ -88,10 +88,11 @@ Definition s_ann := annotated_recs_s.ann s_Sn2 s_SnSk s_Sk2.
 
 Lemma z_Sn2 : annotated_recs_z.Sn2 ghn3.
 Proof.
-rewrite /annotated_recs_z.Sn2 /annotated_recs_z.precond.Sn2 => n ?.
+rewrite /annotated_recs_z.Sn2 /annotated_recs_z.precond.Sn2 => n.
+rewrite uintn.unlock /Nat.of_uint/= /Nat.tail_mul/= => ?.
 rewrite /ghn3 harmonic_numbers.ghn_Sn2 -/ghn3; last lia.
 rewrite /annotated_recs_z.Sn2_cf0 /annotated_recs_z.Sn2_cf1.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Definition z_ann := annotated_recs_z.ann z_Sn2.

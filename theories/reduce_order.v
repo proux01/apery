@@ -60,30 +60,31 @@ Qed.
 Lemma b'0_eq : b' 0 = 0.
 Proof.  by rewrite /= initial_conds.b0_eq.  Qed.
 
-Lemma b'1_eq : b' 1 = 6%:Q.
+Lemma b'1_eq : b' 1 = 6.
 Proof.  by rewrite /= initial_conds.b1_eq.  Qed.
 
-Lemma b'2_eq : b' 2%N = rat_of_Z 351 / rat_of_Z 4.
+Lemma b'2_eq : b' 2%N = 351 / 4.
 Proof.
-rewrite -[Posz 2]/(int.shift 2 0) b'_Sn2_rew // b'0_eq b'1_eq.
+rewrite -[Posz 2]/(int.shift 2 0) b'_Sn2_rew => [|//].
+rewrite b'0_eq b'1_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-by apply/eqP; rewrite rat_of_ZEdef; vm_compute.
-(* Faster than: rat_field; goal_to_lia; intlia. *)
+field.
 Qed.
 
-Lemma b'3_eq : b' 3%N = rat_of_Z 62531 / rat_of_Z 36.
+Lemma b'3_eq : b' 3%N = 62531%:R / 36.
 Proof.
-rewrite -[Posz 3]/(int.shift 2 1) b'_Sn2_rew // b'1_eq b'2_eq.
+rewrite -[Posz 3]/(int.shift 2 1) b'_Sn2_rew => [|//].
+rewrite b'1_eq b'2_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-(* Doesn't finish: apply/eqP; rewrite rat_of_ZEdef; vm_compute. *)
-by field.
+field.
 Qed.
 
-Lemma b'4_eq : b' 4%N = rat_of_Z 11424695 / rat_of_Z 288.
+Lemma b'4_eq : b' 4%N = 11424695%:R / 288.
 Proof.
-rewrite -[Posz 4]/(int.shift 2 2) b'_Sn2_rew // b'2_eq b'3_eq.
+rewrite -[Posz 4]/(int.shift 2 2) b'_Sn2_rew => [|//].
+rewrite b'2_eq b'3_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-by field.
+field.
 Qed.
 
 Lemma b'_Sn4 (n : int) : n >= 0 -> annotated_recs_v.P_horner b' n = 0.
@@ -95,10 +96,9 @@ set b'1 := b' _.
 set b'2 := b' _.
 Fail set b'3 := b' _.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-rewrite  /annotated_recs_v.P_cf0 /annotated_recs_v.P_cf1.
+rewrite /annotated_recs_v.P_cf0 /annotated_recs_v.P_cf1.
 rewrite /annotated_recs_v.P_cf2 /annotated_recs_v.P_cf3 /annotated_recs_v.P_cf4.
-rewrite !rmorphD /=.
-field; ring_lia.
+rewrite !int.shiftP; field by ring_lia.
 Qed.
 
 Lemma Sn4_flat_to_Sn4_rew (w : int -> rat) :
@@ -128,6 +128,7 @@ set c4 := annotated_recs_v.P_cf4 n => hyp.
 clearbody t0 t1 t2 t3.
 have c4_neq_0 : c4 != 0.
   rewrite /c4 /annotated_recs_v.P_cf4.
+  rewrite uintn.unlock /Nat.of_uint/= /Nat.tail_mul/=.
   apply: mulf_neq0; last by ring_lia.
   apply: mulf_neq0; first by ring_lia.
   apply: lt0r_neq0; apply: addr_gt0; last by ring_lia.
@@ -143,8 +144,7 @@ have <- : (c4 * (w (int.shift 4 n) + (t0 + t1 + t2 + t3) / c4) == 0) =
   by apply: mulrI_eq0; first by apply/lregP.
 rewrite mulrDr [c4 * (_ / c4)]mulrC.
 rewrite -{}hyp 3!(int.shiftS n).
-apply/eqP.
-by field.
+apply/eqP; field.
 Qed.
 
 Lemma shift1_to_plus1 (o : nat) : int.shift 1 (Posz o) = Posz (o.+1).
@@ -227,8 +227,8 @@ rewrite /annotated_recs_c.P_horner/punk.horner_seqop [LHS]/=.
 rewrite -!b'_eq_b; [ | lia ..].
 have h' : 0 <= n by lia.
 rewrite b'_Sn2_rew //.
-field.
-by apply/expfz_neq0; ring_lia.
+move: (annotated_recs_c.P_cf1 n) => P_cf1n.
+field by apply/expfz_neq0; ring_lia.
 Qed.
 
 Lemma b_Sn2_at_0 : annotated_recs_c.P_horner b 0 = 0.
@@ -236,7 +236,7 @@ Proof.
 rewrite  /annotated_recs_c.P_horner /punk.horner_seqop /=.
 rewrite initial_conds.b0_eq initial_conds.b1_eq initial_conds.b2_eq.
 rewrite /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-by field; ring_lia.
+field.
 Qed.
 
 Lemma b_Sn2_at_1 : annotated_recs_c.P_horner b 1 = 0.
@@ -244,7 +244,7 @@ Proof.
 rewrite /annotated_recs_c.P_horner /punk.horner_seqop /=.
 rewrite initial_conds.b1_eq initial_conds.b2_eq initial_conds.b3_eq.
 rewrite /annotated_recs_c.P_cf0 /annotated_recs_c.P_cf1 /annotated_recs_c.P_cf2.
-by field; ring_lia.
+field.
 Qed.
 
 Lemma b_Sn2 (n : int) : n >= 0 -> annotated_recs_c.P_horner b n = 0.

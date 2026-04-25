@@ -23,13 +23,12 @@ rewrite c_Sk; last by rewrite /c.precond.Sk; lia.
 rewrite /c.P_cf0 /c.P_cf1 /c.P_cf2 /c.Q_cf0_0 /c.Sn_cf0_0 /c.Sk_cf0_0.
 (* The following rewriting is unavoidable since fractions in the shift lemmas
    for c involve (k + ...)%:~R as soon as we shift more than one time. *)
-rewrite !int.shift2R.
-by field; ring_lia.
+rewrite !int.shift2R; field by ring_lia.
 Qed.
 
 Let a (n : int) : rat := \sum_(0 <= k < n + 1 :> int) (c n k).
 
-Theorem recAperyA (n : int) : 2 <= n :> int -> c.P_horner a n = 0.
+Theorem recAperyA (n : int) : 2%:R <= n :> int -> c.P_horner a n = 0.
 Proof.
 move=> nge2.
 rewrite /c.P_horner (punk.sound_telescoping P_eq_Delta_Q); last lia.
@@ -64,10 +63,9 @@ set c1 := c _ _.
 Fail set c2 := c _ _.
 rewrite
   /c.Sn_cf0_0 /c.Sk_cf0_0
-  /c.P_cf0 /c.P_cf1 /c.P_cf2
-  /c.Q_flat /c.Q_cf0_0
+  /c.P_cf0 /c.P_cf1 /c.P_cf2 /c.Q_cf0_0
   !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 End AnnOfA.

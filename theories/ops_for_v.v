@@ -50,7 +50,7 @@ set c1 := c _ _.
 rewrite
   /c.Sk_cf0_0 /annotated_recs_s.Sk2_cf0_0 /annotated_recs_s.Sk2_cf0_1
   /Sk2_cf0_0 /Sk2_cf0_1 !int.shift2R.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 Lemma v_SnSk : SnSk v.
@@ -68,8 +68,8 @@ set c1 := c _ _.
 (* set c2 := c _ _. *)
 rewrite /c.Sn_cf0_0 /c.Sk_cf0_0 !int.shift2R.
 rewrite /annotated_recs_s.SnSk_cf0_0 /annotated_recs_s.SnSk_cf1_0.
-rewrite  /annotated_recs_s.SnSk_cf0_1 /SnSk_cf0_0 /SnSk_cf1_0 /SnSk_cf0_1.
-by field; ring_lia.
+rewrite /annotated_recs_s.SnSk_cf0_1 /SnSk_cf0_0 /SnSk_cf1_0 /SnSk_cf0_1.
+field by ring_lia.
 Qed.
 
 Lemma v_Sn2 : Sn2 v.
@@ -89,7 +89,7 @@ rewrite /c.Sn_cf0_0 /c.Sk_cf0_0 !int.shift2R.
 rewrite /Sn2_cf0_0 /Sn2_cf1_0 /Sn2_cf0_1.
 rewrite /annotated_recs_s.Sn2_cf0_0 /annotated_recs_s.Sn2_cf1_0.
 rewrite /annotated_recs_s.Sn2_cf0_1.
-by field; ring_lia.
+field by ring_lia.
 Qed.
 
 End AnnOfV.

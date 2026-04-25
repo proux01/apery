@@ -1,4 +1,3 @@
-From mathcomp Require all_algebra. (* Remove this line when requiring Rocq > 9.1 *)
 Require Import ZArith.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint.
 From mathcomp Require Import archimedean rat interval_inference all_field.
